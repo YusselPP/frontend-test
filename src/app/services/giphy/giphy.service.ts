@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { SearchResult } from './interfaces';
@@ -10,9 +10,19 @@ import { SearchResult } from './interfaces';
 })
 export class GiphyService {
   readonly BaseUrl = 'https://api.giphy.com/v1';
+
   private readonly KeyParam = new HttpParams({
     fromObject: { api_key: environment.giphyApiKey }
   });
+
+  private readonly emptyResult: SearchResult = {
+    data: [],
+    pagination: {
+      total_count: 0,
+      offset: 0,
+      count: 0
+    }
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -20,6 +30,10 @@ export class GiphyService {
     const params = this.KeyParam.append('q', query)
       .append('offset', `${offset}`)
       .append('limit', `${limit}`);
+
+    if (!query) {
+      return of(this.emptyResult);
+    }
 
     return this.http.get<SearchResult>(`${this.BaseUrl}/gifs/search`, {
       params

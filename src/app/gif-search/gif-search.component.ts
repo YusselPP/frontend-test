@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of, empty } from 'rxjs';
 import {
   map,
   pluck,
   share,
   switchMap,
   debounceTime,
-  filter
+  tap
 } from 'rxjs/operators';
 
 import { GiphyService, Gif } from '../services/giphy';
@@ -21,13 +21,18 @@ export class GifSearchComponent implements OnInit {
   images$: Observable<GalleryImage[]>;
   totalCount$: Observable<number>;
 
-  private query$ = new BehaviorSubject('');
+  params$ = new BehaviorSubject({ query: '', offset: 0 });
+  loading = false;
+
+  page = 1;
+  pageSize = 9;
 
   constructor(giphyService: GiphyService) {
-    const searchResult$ = this.query$.pipe(
-      debounceTime(1000),
-      filter((query) => !!query),
-      switchMap((query) => giphyService.searchGifs(query)),
+    const searchResult$ = this.params$.pipe(
+      debounceTime(500),
+      tap(() => (this.loading = true)),
+      switchMap(({ query, offset }) => giphyService.searchGifs(query, offset)),
+      tap(() => (this.loading = false)),
       share()
     );
 
@@ -47,6 +52,17 @@ export class GifSearchComponent implements OnInit {
   ngOnInit(): void {}
 
   onQueryChange(query: string) {
-    this.query$.next(query);
+    this.page = 1;
+    this.params$.next({
+      offset: 0,
+      query
+    });
+  }
+
+  onPageChange() {
+    this.params$.next({
+      ...this.params$.getValue(),
+      offset: (this.page - 1) * this.pageSize
+    });
   }
 }

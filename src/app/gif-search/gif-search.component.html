@@ -1,10 +1,27 @@
-<div class="gif-search mt-4">
-  <app-search-bar (queryChange)="onQueryChange($event)"></app-search-bar>
+<div class="gif-search pt-4 h-100 d-flex flex-column">
+  <app-search-bar
+    class="pb-2"
+    (queryChange)="onQueryChange($event)"
+  ></app-search-bar>
 
-  <app-image-gallery
+  <div
     *ngIf="images$ | async as images"
-    [images]="images"
-  ></app-image-gallery>
+    class="gallery-container overflow-auto text-center h-100"
+  >
+    <div *ngIf="loading" class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
 
-  {{ totalCount$ | async }}
+    <app-image-gallery [images]="images"></app-image-gallery>
+  </div>
+
+  <ngb-pagination
+    *ngIf="totalCount$ | async as totalCount"
+    class="d-flex justify-content-center pt-2"
+    [(page)]="page"
+    (pageChange)="onPageChange()"
+    [collectionSize]="totalCount"
+    [pageSize]="pageSize"
+    [maxSize]="6"
+  ></ngb-pagination>
 </div>
