@@ -1,0 +1,5 @@
+<div class="image-gallery card-columns mt-4">
+  <div class="image-container card" *ngFor="let image of images">
+    <img class="image" [src]="image.url" [alt]="image.title" />
+  </div>
+</div>
