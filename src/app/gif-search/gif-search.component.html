@@ -1,0 +1,10 @@
+<div class="gif-search mt-4">
+  <app-search-bar (queryChange)="onQueryChange($event)"></app-search-bar>
+
+  <app-image-gallery
+    *ngIf="images$ | async as images"
+    [images]="images"
+  ></app-image-gallery>
+
+  {{ totalCount$ | async }}
+</div>
