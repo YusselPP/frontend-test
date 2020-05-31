@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, BehaviorSubject, of, empty } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import {
   map,
   pluck,
   share,
   switchMap,
   debounceTime,
-  tap
+  tap,
+  catchError,
+  filter
 } from 'rxjs/operators';
 
-import { GiphyService, Gif } from '../services/giphy';
+import { GiphyService, Gif, SearchResult } from '../services/giphy';
 import { GalleryImage } from '../shared/image-gallery/interfaces';
 
 @Component({
@@ -21,18 +23,32 @@ export class GifSearchComponent implements OnInit {
   images$: Observable<GalleryImage[]>;
   totalCount$: Observable<number>;
 
-  params$ = new BehaviorSubject({ query: '', offset: 0 });
-  loading = false;
-
   page = 1;
   pageSize = 9;
+  loading = false;
+  errorMessage: string;
+
+  private params$ = new BehaviorSubject({ query: '', offset: 0 });
 
   constructor(giphyService: GiphyService) {
-    const searchResult$ = this.params$.pipe(
+    const searchResult$: Observable<
+      SearchResult | undefined
+    > = this.params$.pipe(
       debounceTime(500),
-      tap(() => (this.loading = true)),
-      switchMap(({ query, offset }) => giphyService.searchGifs(query, offset)),
+      tap(() => {
+        this.loading = true;
+        this.errorMessage = '';
+      }),
+      switchMap(({ query, offset }) =>
+        giphyService.searchGifs(query, offset).pipe(
+          catchError(() => {
+            this.errorMessage = 'Sorry something went wrong. Please try again.';
+            return of(undefined);
+          })
+        )
+      ),
       tap(() => (this.loading = false)),
+      filter((results) => results !== undefined),
       share()
     );
 

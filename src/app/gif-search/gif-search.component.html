@@ -1,4 +1,8 @@
 <div class="gif-search pt-4 h-100 d-flex flex-column">
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
   <app-search-bar
     class="pb-2"
     (queryChange)="onQueryChange($event)"
