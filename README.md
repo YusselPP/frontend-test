@@ -1,13 +1,22 @@
-# frontend-test
+# Frontend Test
 
-Exercise :
+Features:
 
-- Create an angular project with the latest version.
-- Install Bootstrap.
-- Use Sass
-- Create a simple project with a page listing a result of images from the [Giphy API](https://developers.giphy.com/).
-- This page must contain: a multi-tag search engine, the result of searching for 3 x 3 images, a pagination.
-- Add a layer of unit test and end to end.
+- Search Gifs with the [Giphy API](https://developers.giphy.com/).
+- Show the search result in a 3 x 3 grid with pagination.
 
+## Development server
 
-Please create your branch with a commit by feature then submit your pull request on this repository
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
